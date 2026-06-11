@@ -77,7 +77,7 @@ export default function QueueBoard() {
   };
 
   const canEdit = (order: RepairOrder) => {
-    return order.status === 'pending' || order.status === 'processing';
+    return order.status === 'pending' || order.status === 'processing' || order.status === 'rescheduled';
   };
 
   const renderSlotSection = (slot: 'morning' | 'afternoon', label: string) => {

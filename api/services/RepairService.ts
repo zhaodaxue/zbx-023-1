@@ -200,8 +200,7 @@ export class RepairService {
         isJumped: priorityResult.isJumped,
         jumpReason: priorityResult.jumpReason,
         rescheduledAt: new Date().toISOString(),
-        rescheduleCount: order.rescheduleCount + 1,
-        status: 'rescheduled'
+        rescheduleCount: order.rescheduleCount + 1
       })!;
 
       const existingOrders = repairOrderRepository.findByDateAndSlot(request.newDate, request.newSlot);

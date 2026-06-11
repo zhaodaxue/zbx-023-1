@@ -118,7 +118,7 @@ export class BusinessRulesEngine {
     actualBatchCode: string,
     batchChangeNote?: string
   ): { valid: boolean; error?: string } {
-    if (repairOrder.status !== 'pending' && repairOrder.status !== 'processing') {
+    if (repairOrder.status !== 'pending' && repairOrder.status !== 'processing' && repairOrder.status !== 'rescheduled') {
       return { valid: false, error: '只有待修复或修复中的工单可以完工登记' };
     }
 

@@ -14,8 +14,8 @@ export class QueueService {
       .filter(o => o.slot === 'afternoon')
       .sort((a, b) => a.priority - b.priority || new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-    const morningCount = morningOrders.filter(o => o.status !== 'cancelled').length;
-    const afternoonCount = afternoonOrders.filter(o => o.status !== 'cancelled').length;
+    const morningCount = morningOrders.filter(o => o.status === 'pending' || o.status === 'processing').length;
+    const afternoonCount = afternoonOrders.filter(o => o.status === 'pending' || o.status === 'processing').length;
 
     const morningSlotInfo: QueueSlotInfo = {
       slot: 'morning',

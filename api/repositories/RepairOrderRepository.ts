@@ -58,7 +58,7 @@ export class RepairOrderRepository {
         created_at as createdAt, completed_at as completedAt,
         rescheduled_at as rescheduledAt, reschedule_count as rescheduleCount
       FROM repair_orders
-      WHERE repair_date = ? AND slot = ? AND status IN ('pending', 'processing')
+      WHERE repair_date = ? AND slot = ? AND status IN ('pending', 'processing', 'rescheduled')
       ORDER BY priority ASC, created_at ASC
     `).all(date, slot) as any[];
     return rows.map(r => this.mapRow(r));
@@ -68,7 +68,7 @@ export class RepairOrderRepository {
     const row = db.prepare(`
       SELECT COUNT(*) as count
       FROM repair_orders
-      WHERE repair_date = ? AND slot = ? AND status IN ('pending', 'processing')
+      WHERE repair_date = ? AND slot = ? AND status IN ('pending', 'processing', 'rescheduled')
     `).get(date, slot) as any;
     return row.count;
   }
@@ -102,21 +102,21 @@ export class RepairOrderRepository {
 
   create(data: Omit<RepairOrder, 'id' | 'createdAt' | 'rescheduleCount'>): RepairOrder {
     const id = `ro_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const now = new Date().toISOString();
+    const createdAt = new Date().toISOString();
     db.prepare(`
       INSERT INTO repair_orders (
         id, order_no, puppet_head_id, head_code, face_style, crack_level,
         paint_batch_id, paint_batch_code, actual_paint_batch_id, actual_paint_batch_code,
         batch_change_note, slot, repair_date, status, priority, is_jumped,
-        jump_reason, completed_at, rescheduled_at, reschedule_count
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+        jump_reason, created_at, completed_at, rescheduled_at, reschedule_count
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
     `).run(
       id, data.orderNo, data.puppetHeadId, data.headCode, data.faceStyle,
       data.crackLevel, data.paintBatchId, data.paintBatchCode,
       data.actualPaintBatchId || null, data.actualPaintBatchCode || null,
       data.batchChangeNote || null, data.slot, data.repairDate,
       data.status, data.priority, data.isJumped ? 1 : 0,
-      data.jumpReason || null, data.completedAt || null, data.rescheduledAt || null
+      data.jumpReason || null, createdAt, data.completedAt || null, data.rescheduledAt || null
     );
     return this.findById(id)!;
   }
