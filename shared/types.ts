@@ -108,6 +108,46 @@ export interface DailyQueue {
   };
 }
 
+export interface FaceStyleJumpQuota {
+  faceStyle: string;
+  used: number;
+  quota: number;
+  remaining: number;
+}
+
+export interface SandboxSlot {
+  slot: RepairSlot;
+  total: number;
+  capacity: number;
+  remaining: number;
+  isFull: boolean;
+  jumpQuotas: FaceStyleJumpQuota[];
+}
+
+export interface SandboxDay {
+  date: string;
+  weekday: string;
+  isToday: boolean;
+  morning: SandboxSlot;
+  afternoon: SandboxSlot;
+}
+
+export interface SlotPreviewResult {
+  slot: RepairSlot;
+  date: string;
+  estimatedPosition: number;
+  totalOrders: number;
+  capacity: number;
+  isSlotFull: boolean;
+  willJump: boolean;
+  canJump: boolean;
+  jumpQuotaUsed: number;
+  jumpQuotaTotal: number;
+  jumpQuotaRemaining: number;
+  canSubmit: boolean;
+  rejectReason?: string;
+}
+
 export const CRACK_LEVEL_LABELS: Record<CrackLevel, string> = {
   hairline: '发丝纹',
   mesh: '网状纹',

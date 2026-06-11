@@ -1,9 +1,10 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ClipboardList, Users, FlaskConical, History } from 'lucide-react';
+import { ClipboardList, Users, CalendarDays, FlaskConical, History } from 'lucide-react';
 
 const navItems = [
   { to: '/', label: '报修登记', icon: ClipboardList },
   { to: '/queue', label: '当日队列', icon: Users },
+  { to: '/sandbox', label: '排期沙盘', icon: CalendarDays },
   { to: '/compatibility', label: '配伍查询', icon: FlaskConical },
   { to: '/trace', label: '追溯时间线', icon: History },
 ];

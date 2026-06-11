@@ -8,6 +8,10 @@ import {
   DailyQueue,
   QueueSlotInfo,
   TraceEvent,
+  SandboxDay,
+  SlotPreviewResult,
+  CrackLevel,
+  RepairSlot,
 } from '@shared/types';
 
 const API_BASE = '/api';
@@ -61,6 +65,12 @@ export const api = {
 
     getCapacity: (date: string, slot: 'morning' | 'afternoon'): Promise<{ success: boolean; data?: QueueSlotInfo; error?: string }> =>
       request(`/queue/capacity?date=${date}&slot=${slot}`),
+
+    getSandbox: (): Promise<{ success: boolean; data?: SandboxDay[]; error?: string }> =>
+      request('/queue/sandbox'),
+
+    getPreview: (date: string, slot: RepairSlot, faceStyle: string, crackLevel: CrackLevel): Promise<{ success: boolean; data?: SlotPreviewResult; error?: string }> =>
+      request(`/queue/preview?date=${date}&slot=${slot}&faceStyle=${encodeURIComponent(faceStyle)}&crackLevel=${crackLevel}`),
   },
 
   batches: {

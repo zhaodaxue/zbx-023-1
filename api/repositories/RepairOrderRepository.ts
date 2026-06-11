@@ -82,6 +82,17 @@ export class RepairOrderRepository {
     return row.count;
   }
 
+  countJumpedGroupedByDateAndFace(startDate: string, endDate: string): Array<{ date: string; faceStyle: string; count: number }> {
+    const rows = db.prepare(`
+      SELECT repair_date as date, face_style as faceStyle, COUNT(*) as count
+      FROM repair_orders
+      WHERE repair_date >= ? AND repair_date <= ? AND is_jumped = 1 AND status != 'cancelled'
+      GROUP BY repair_date, face_style
+      ORDER BY repair_date, face_style
+    `).all(startDate, endDate) as any[];
+    return rows;
+  }
+
   findAllByDate(date: string): RepairOrder[] {
     const rows = db.prepare(`
       SELECT 

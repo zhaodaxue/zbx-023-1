@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, Sparkles, Calendar, Palette, Droplets, Clock } from 'lucide-react';
 import { api } from '@/utils/api';
 import { CreateRepairRequest, CrackLevel, RepairSlot, CRACK_LEVEL_LABELS, SLOT_LABELS, PaintBatch } from '@shared/types';
+import SlotPreviewBar from '@/components/SlotPreviewBar';
+import { useRepairStore } from '@/store/useRepairStore';
 
 const FACE_STYLES = ['生角', '旦角', '净角', '末角', '丑角', '花脸'];
 
 export default function RepairForm() {
   const navigate = useNavigate();
+  const { refreshAll } = useRepairStore();
   const [formData, setFormData] = useState<CreateRepairRequest>({
     headCode: '',
     faceStyle: '生角',
@@ -24,9 +27,13 @@ export default function RepairForm() {
     suggestedBatches?: PaintBatch[];
   }>({ valid: false, checking: false });
 
-  const [slotCapacity, setSlotCapacity] = useState<{ remaining: number; capacity: number } | null>(null);
+  const [canSubmit, setCanSubmit] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string; orderNo?: string } | null>(null);
+
+  const handleCanSubmitChange = useCallback((canSubmitVal: boolean) => {
+    setCanSubmit(canSubmitVal);
+  }, []);
 
   useEffect(() => {
     if (formData.paintBatchCode.trim()) {
@@ -35,12 +42,6 @@ export default function RepairForm() {
       setBatchValidation({ valid: false, checking: false });
     }
   }, [formData.paintBatchCode]);
-
-  useEffect(() => {
-    if (formData.repairDate && formData.slot) {
-      fetchSlotCapacity();
-    }
-  }, [formData.repairDate, formData.slot]);
 
   const validateBatch = async () => {
     setBatchValidation({ valid: false, checking: true });
@@ -57,23 +58,9 @@ export default function RepairForm() {
     }
   };
 
-  const fetchSlotCapacity = async () => {
-    try {
-      const response = await api.queue.getCapacity(formData.repairDate, formData.slot);
-      if (response.success && response.data) {
-        setSlotCapacity({
-          remaining: response.data.remaining,
-          capacity: response.data.capacity,
-        });
-      }
-    } catch {
-      setSlotCapacity(null);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!batchValidation.valid || submitting) return;
+    if (!batchValidation.valid || !canSubmit || submitting) return;
 
     setSubmitting(true);
     setResult(null);
@@ -86,6 +73,7 @@ export default function RepairForm() {
           message: `报修成功！${response.data.isJumped ? '该偶头为「剥落」等级，已自动插队' : ''}`,
           orderNo: response.data.orderNo,
         });
+        refreshAll();
         if (response.data.isJumped) {
           setTimeout(() => navigate('/queue'), 2000);
         } else {
@@ -279,13 +267,6 @@ export default function RepairForm() {
                     className="sr-only"
                   />
                   <div className="font-medium">{SLOT_LABELS[slot]}</div>
-                  {slotCapacity && formData.slot === slot && (
-                    <div className={`text-xs mt-1 ${
-                      slotCapacity.remaining > 0 ? 'text-bronze-600' : 'text-cinnabar-600'
-                    }`}>
-                      剩余 {slotCapacity.remaining}/{slotCapacity.capacity} 位
-                    </div>
-                  )}
                 </label>
               ))}
             </div>
@@ -294,8 +275,16 @@ export default function RepairForm() {
 
         <div className="scroll-divider" />
 
+        <SlotPreviewBar
+          date={formData.repairDate}
+          slot={formData.slot}
+          faceStyle={formData.faceStyle}
+          crackLevel={formData.crackLevel}
+          onCanSubmitChange={handleCanSubmitChange}
+        />
+
         {formData.crackLevel === 'peeling' && (
-          <div className="mb-6 p-4 bg-cinnabar-50 border border-cinnabar-200 rounded-md flex items-start gap-3">
+          <div className="mt-6 p-4 bg-cinnabar-50 border border-cinnabar-200 rounded-md flex items-start gap-3">
             <Sparkles className="text-cinnabar-600 flex-shrink-0 mt-0.5" size={20} />
             <div>
               <div className="font-medium text-cinnabar-700">插队提醒</div>
@@ -307,7 +296,7 @@ export default function RepairForm() {
         )}
 
         {result && (
-          <div className={`mb-6 p-4 rounded-md flex items-center gap-3 ${
+          <div className={`mt-6 p-4 rounded-md flex items-center gap-3 ${
             result.success ? 'bg-bronze-50 border border-bronze-200' : 'bg-cinnabar-50 border border-cinnabar-200'
           }`}>
             {result.success ? (
@@ -327,7 +316,7 @@ export default function RepairForm() {
           </div>
         )}
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 mt-6">
           <button
             type="button"
             className="btn-secondary"
@@ -338,7 +327,7 @@ export default function RepairForm() {
           <button
             type="submit"
             className="btn-primary"
-            disabled={!batchValidation.valid || submitting || (slotCapacity !== null && slotCapacity.remaining <= 0)}
+            disabled={!batchValidation.valid || !canSubmit || submitting}
           >
             {submitting ? '提交中...' : '提交报修'}
           </button>
