@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=ZCOOL+XiaoWei&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Serif SC', serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  background-color: #f5f0e8;
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(196, 30, 58, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(92, 122, 109, 0.03) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  color: #1a1a1a;
+}
+
+@layer components {
+  .scroll-card {
+    @apply bg-paper-100 border border-paper-300 rounded-md shadow-scroll;
+    background-image: linear-gradient(to bottom, #faf8f4 0%, #f5f0e8 100%);
+  }
+
+  .stamp-badge {
+    @apply inline-flex items-center justify-center px-2 py-1 bg-cinnabar-700 text-paper-100 font-bold rounded-sm shadow-stamp;
+    font-family: 'ZCOOL XiaoWei', serif;
+    transform: rotate(-2deg);
+  }
+
+  .gold-stamp-badge {
+    @apply inline-flex items-center justify-center px-2 py-1 bg-gold-500 text-ink-800 font-bold rounded-sm;
+    font-family: 'ZCOOL XiaoWei', serif;
+    box-shadow: 0 0 0 2px #b88c36, 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .scroll-divider {
+    @apply h-px bg-gradient-to-r from-transparent via-bronze-400 to-transparent my-4;
+  }
+
+  .btn-primary {
+    @apply px-6 py-2.5 bg-cinnabar-700 text-paper-100 font-medium rounded-md border-2 border-gold-500 transition-all duration-200 hover:bg-cinnabar-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed;
+    font-family: 'ZCOOL XiaoWei', serif;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2.5 bg-paper-100 text-ink-800 font-medium rounded-md border-2 border-bronze-500 transition-all duration-200 hover:bg-paper-200 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed;
+    font-family: 'ZCOOL XiaoWei', serif;
+  }
+
+  .btn-danger {
+    @apply px-6 py-2.5 bg-ink-800 text-paper-100 font-medium rounded-md border-2 border-cinnabar-600 transition-all duration-200 hover:bg-ink-900 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed;
+    font-family: 'ZCOOL XiaoWei', serif;
+  }
+
+  .form-input {
+    @apply w-full px-4 py-2.5 bg-paper-50 border-2 border-paper-300 rounded-md text-ink-800 transition-all duration-200 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-200;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  .form-select {
+    @apply w-full px-4 py-2.5 bg-paper-50 border-2 border-paper-300 rounded-md text-ink-800 transition-all duration-200 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-200 cursor-pointer;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-ink-700 mb-1.5;
+    font-family: 'ZCOOL XiaoWei', serif;
+  }
+
+  .page-title {
+    @apply text-3xl font-bold text-ink-800 mb-2;
+    font-family: 'ZCOOL XiaoWei', serif;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-ink-800 mb-3 flex items-center gap-2;
+    font-family: 'ZCOOL XiaoWei', serif;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-2 px-4 py-3 text-ink-600 hover:text-cinnabar-700 hover:bg-paper-200 rounded-md transition-all duration-200;
+    font-family: 'ZCOOL XiaoWei', serif;
+  }
+
+  .nav-link.active {
+    @apply bg-cinnabar-700 text-paper-100 hover:bg-cinnabar-800 hover:text-paper-100;
+  }
+
+  .timeline-node {
+    @apply relative pl-8 pb-6 border-l-2 border-bronze-300 last:border-l-0;
+  }
+
+  .timeline-dot {
+    @apply absolute left-[-9px] top-0 w-4 h-4 rounded-full border-[3px] border-gold-500 bg-paper-100;
+  }
+
+  .timeline-dot.highlight {
+    @apply bg-cinnabar-700 border-cinnabar-900 animate-glow-pulse;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ede4d4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4b089;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8956e;
+}

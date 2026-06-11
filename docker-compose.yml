@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: puppet-repair-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - puppet-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: puppet-repair-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - puppet-data:/app/data
+      - ./migrations:/app/migrations:ro
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DB_PATH=/app/data/puppet_repair.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - puppet-network
+
+volumes:
+  puppet-data:
+    name: puppet-repair-data
+
+networks:
+  puppet-network:
+    name: puppet-repair-network
+    driver: bridge

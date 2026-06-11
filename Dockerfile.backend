@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+RUN mkdir -p /app/data
+
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV DB_PATH=/app/data/puppet_repair.db
+
+EXPOSE 3001
+
+CMD ["node", "--import", "tsx", "api/server.ts"]
